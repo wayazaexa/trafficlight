@@ -1,23 +1,22 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define BIT_SET(a, b) (a |= (1U << b))
-#define BIT_CLEAR(a, b) (a &= ~(1U << b))
-
+/*
+OBS! Detta är *INTE* rekommenderat sätt att göra detta på, men eftersom vi har full kontroll över registren
+    och vet att PORTB inte används till något annat så *går det* att göra på detta sätt.
+Om vi använt en eller flera andra pinnar på PORTB så hade detta förstört logiken för den/dem.
+*/
 void trafficlight() {
+    BIT_SET(PORTB, 0); // Red light on
     while (1) {
-        BIT_SET(PORTB, 0); // Red light for 5 sec
         _delay_ms(5000);
-        BIT_CLEAR(PORTB, 0); // Red light off
-        BIT_SET(PORTB, 1); // Yellow light for 2 sec
+        PORTB = (PORTB << 1); // Red light off, yellow light on
         _delay_ms(2000);
-        BIT_CLEAR(PORTB, 1); // Yellow light off
-        BIT_SET(PORTB, 2); // Green light for 5 sec
+        PORTB = (PORTB << 1); // Yellow light off, green light on
         _delay_ms(5000);
-        BIT_CLEAR(PORTB, 2); // Green light off
-        BIT_SET(PORTB, 1); // Yellow light for 2 sec
+        PORTB = (PORTB >> 1); // Green light off, yellow light on
         _delay_ms(2000);
-        BIT_CLEAR(PORTB, 1); // Yellow light off
+        PORTB = (PORTB >> 1); // Yellow light off, red light on
     }
 }
 
