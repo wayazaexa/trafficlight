@@ -1,6 +1,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#define BIT_SET(a, b) (a |= (1U << b))
+
 /*
 OBS! Detta är *INTE* rekommenderat sätt att göra detta på, men eftersom vi har full kontroll över registren
     och vet att PORTB inte används till något annat så *går det* att göra på detta sätt.
@@ -10,13 +12,13 @@ void trafficlight() {
     BIT_SET(PORTB, 0); // Red light on
     while (1) {
         _delay_ms(5000);
-        PORTB = (PORTB << 1); // Red light off, yellow light on
+        PORTB <<= 1; // Red light off, yellow light on
         _delay_ms(2000);
-        PORTB = (PORTB << 1); // Yellow light off, green light on
+        PORTB <<= 1; // Yellow light off, green light on
         _delay_ms(5000);
-        PORTB = (PORTB >> 1); // Green light off, yellow light on
+        PORTB >>= 1; // Green light off, yellow light on
         _delay_ms(2000);
-        PORTB = (PORTB >> 1); // Yellow light off, red light on
+        PORTB >>= 1; // Yellow light off, red light on
     }
 }
 
